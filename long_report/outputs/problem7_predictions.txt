@@ -1,0 +1,33 @@
+Problem 7 image prediction results
+Model: docs/model.onnx (exported clean model)
+Preprocessing: docs/app.js toInput pipeline mirrored using docs/model.json settings; EXIF orientation applied as in browser image decoding.
+Resize shorter side to 256 with bilinear interpolation; centre crop 224x224; softmax probabilities from ONNX logits.
+Percentages rounded to 1 decimal place.
+Experiment 1 manual copy mapping: 23=...001.jpeg; 30=...002.jpeg; 27=...003.jpeg; 25=...004.jpeg.
+
+Experiment 1
+============
+No. | Filename | Original top answer (%) | Copy top answer (%) | Full class probabilities (original / copy)
+23 | KakaoTalk_Photo_2026-10-12-15-02-23 002.jpeg | ganadi (59.4%) | nongdamgom (68.3%) | chiikawa: 6.2% / 1.8%; ganadi: 59.4% / 6.8%; molang: 29.1% / 23.1%; nongdamgom: 5.3% / 68.3%
+25 | KakaoTalk_Photo_2026-10-12-15-02-25 004.jpeg | ganadi (33.0%) | nongdamgom (84.4%) | chiikawa: 14.1% / 2.4%; ganadi: 33.0% / 3.0%; molang: 24.0% / 10.1%; nongdamgom: 29.0% / 84.4%
+27 | KakaoTalk_Photo_2026-10-12-15-02-26 006.jpeg | chiikawa (37.1%) | nongdamgom (55.9%) | chiikawa: 37.1% / 4.8%; ganadi: 32.6% / 9.5%; molang: 24.2% / 29.9%; nongdamgom: 6.1% / 55.9%
+30 | KakaoTalk_Photo_2026-10-12-15-02-30 010.jpeg | ganadi (96.2%) | ganadi (63.4%) | chiikawa: 0.6% / 1.1%; ganadi: 96.2% / 63.4%; molang: 0.3% / 1.3%; nongdamgom: 2.9% / 34.2%
+Crop sheet: long_report/figures/problem7_exp1_crops.png
+
+Experiment 2-A
+==============
+No. | Filename | Original top answer (%) | Copy top answer (%) | Full class probabilities (original / copy)
+09 | KakaoTalk_Photo_2026-10-13-02-10-39 010.jpeg | molang (93.9%) | molang (60.7%) | chiikawa: 1.6% / 4.8%; ganadi: 2.2% / 13.6%; molang: 93.9% / 60.7%; nongdamgom: 2.4% / 20.9%
+11 | KakaoTalk_Photo_2026-10-13-02-10-35 006.jpeg | molang (51.4%) | ganadi (98.0%) | chiikawa: 1.1% / 0.2%; ganadi: 18.1% / 98.0%; molang: 51.4% / 1.4%; nongdamgom: 29.3% / 0.3%
+12 | KakaoTalk_Photo_2026-10-13-02-10-36 007.jpeg | molang (90.0%) | ganadi (89.3%) | chiikawa: 1.7% / 0.6%; ganadi: 7.0% / 89.3%; molang: 90.0% / 8.2%; nongdamgom: 1.3% / 2.0%
+13 | KakaoTalk_Photo_2026-10-13-02-10-37 008.jpeg | molang (94.5%) | ganadi (95.4%) | chiikawa: 1.1% / 1.0%; ganadi: 4.1% / 95.4%; molang: 94.5% / 2.8%; nongdamgom: 0.3% / 0.8%
+Crop sheet: long_report/figures/problem7_exp2_crops.png
+
+Experiment 3
+============
+No. | Filename | Original top answer (%) | Copy top answer (%) | Full class probabilities (original / copy)
+17 | KakaoTalk_Photo_2026-10-12-15-02-38 018.jpeg | molang (92.1%) | ganadi (76.6%) | chiikawa: 3.9% / 5.8%; ganadi: 0.6% / 76.6%; molang: 92.1% / 4.0%; nongdamgom: 3.4% / 13.7%
+18 | KakaoTalk_Photo_2026-10-12-15-02-38 019.jpeg | molang (97.0%) | ganadi (74.5%) | chiikawa: 0.9% / 8.3%; ganadi: 0.3% / 74.5%; molang: 97.0% / 8.1%; nongdamgom: 1.7% / 9.2%
+19 | KakaoTalk_Photo_2026-10-12-15-02-40 020.jpeg | molang (93.2%) | ganadi (86.1%) | chiikawa: 2.2% / 5.1%; ganadi: 0.4% / 86.1%; molang: 93.2% / 5.0%; nongdamgom: 4.2% / 3.7%
+20 | KakaoTalk_Photo_2026-10-13-02-10-31 003.jpeg | molang (43.4%) | nongdamgom (49.8%) | chiikawa: 22.0% / 6.0%; ganadi: 6.8% / 36.7%; molang: 43.4% / 7.5%; nongdamgom: 27.8% / 49.8%
+Crop sheet: long_report/figures/problem7_exp3_crops.png

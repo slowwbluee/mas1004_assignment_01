@@ -1,0 +1,16 @@
+class                    downloaded  removed   kept  other
+chiikawa                        150       84     66      0
+ganadi                          150       42    108      0
+molang                          150       72     78      0
+nongdamgom                      150       25    125      0
+
+reasons
+   102  name text
+    47  group shot
+    40  other character
+    24  near copy
+     4  unrecognizable
+     3  cropped out
+     3  too small
+
+"other" is images that are in data/raw but neither in data/clean nor removed with `clean.py remove`, for example ones you deleted by hand. Their reasons are not recorded.

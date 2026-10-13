@@ -12,154 +12,348 @@
 %
 % To make the PDF: compress this folder into a zip, and on Overleaf choose
 % New Project, Upload Project. Set Menu, Compiler to XeLaTeX, and Recompile.
-
 \documentclass[11pt]{article}
-\usepackage{mas1004}
+\usepackage[ko]{mas1004}
 
-\reporttitle{Assignment 1: Long report}
-\studentname{Your name}
-\studentid{Your student ID}
+\reporttitle{assignment1: Long Report}
+\studentname{}
+\studentid{}
 
 \begin{document}
 \makeheader
 
 % ---------------------------------------------------------------------------
-\section*{Problem 1. Categories and images}
+\section*{Problem 1. 카테고리와 이미지}
 
-\subsection*{Why these categories}
-\fillin{Why these categories, and why you care about them.}
+\subsection*{카테고리를 고른 이유}
+요즘 유행하는 캐릭터를 모델이 구별할 수 있는지 궁금했다. 네 캐릭터 모두
+검은 선과 흰 몸, 작은 귀처럼 비슷한 점이 많아서 모델이 실제 생김새로
+구분할 수 있는지 알고 싶었다.
 
-\subsection*{What I expected the model to use}
-\fillin{What you thought, before training, the model would use to tell them
-apart: shape, colour, texture, background, or something else.}
+\subsection*{모델이 사용할 것이라고 예상한 특징}
+치이카와는 다른 캐릭터와 다른 눈 모양으로, 가나디는 조금 더 큰 귀로
+구분할 것이라고 생각했다. 농담곰은 가나디와 비슷한 점이 많아 구분 기준을
+예상하기 어려웠다. 몰랑이는 몸 모양이 나머지 캐릭터와 달라서 몸의 형태로
+구분할 것이라고 생각했다. 이 예상은 색과 배경을 바꾸는 Problem 7 실험으로
+확인했다.
 
-\subsection*{Images per category}
-\fillin{How many images you got for each category.}
-
-% ---------------------------------------------------------------------------
-\section*{Problem 2. Preparing an image}
-
-\sidebyside{figures/prepare_original.jpg}{\fillin{the image as downloaded}}
-           {figures/prepare_result.png}{\fillin{what prepare\_image made of it}}
-
-\fillin{What was cut off, and an image where the crop cut off part of the
-thing you care about.}
-
-% ---------------------------------------------------------------------------
-\section*{Problem 3. First training runs}
+\subsection*{이미지 수}
+검색어는 chiikawa에는 ``chiikawa'', nongdamgom에는 ``自分ツッコミくま'',
+ganadi에는 ``듀 가나디'', molang에는 ``molang 몰랑이''를 사용했다.
+첫 학습 출력에 따르면 각 클래스에서 150장씩, 총 600장을 받았다.
 
 \begin{center}\footnotesize
-\begin{tabular}{llllrrrr}
-\toprule
-tag & start & trained & epochs & lr & trainable parameters & train acc. & test acc. \\
+\begin{tabular}{lr}
+	oprule
+클래스 & 다운로드 이미지 \\
 \midrule
-\multicolumn{8}{l}{\fillin{one row per run, as run.py printed it}} \\
+chiikawa & 150 \\
+ganadi & 150 \\
+molang & 150 \\
+nongdamgom & 150 \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\picturefile{figures/run_curves.png}
+% ---------------------------------------------------------------------------
+\section*{Problem 2. 이미지 전처리}
 
-\fillin{Did the loss go down? Did it keep going down, or flatten out?}
+\picturefile[0.95\linewidth]{figures/problem2_chiikawa_crop.jpg}
 
-\fillin{The gap between train and test accuracy, and what it means.}
+그림은 치이카와 단체샷이다. 원본의 가운데 정사각형을 224×224로 자르면
+가장자리 캐릭터가 잘려 나가고, 그림에서 중요한 치이카와도 크롭 안에서
+잘려 나간다. 위 그림의 오른쪽은 실제로 모델이 보는 가운데 크롭이다.
+전처리는 짧은 변을 256으로 bilinear resize한 다음 중앙 224×224를 자르고,
+RGB 채널을 ImageNet 평균과 표준편차로 정규화했다.
 
-\begin{center}\picturefile[0.5\linewidth]{figures/run_confusion.png}\end{center}
+% ---------------------------------------------------------------------------
+\section*{Problem 3. 첫 학습 결과}
 
-\fillin{Which two categories it mixes up most, and whether that surprised you.}
+\begin{center}\footnotesize
+\begin{tabular}{lllr rrrr}
+	oprule
+태그 & 시작 가중치 & 학습 층 & epoch & lr & 학습 파라미터 & train acc. & test acc. \\
+\midrule
+run & ImageNet & 전체 & 10 & 0.0001 & 11,178,564 & 100.0\% & 97.5\% \\
+scratch & random & 전체 & 10 & 0.0001 & 11,178,564 & 100.0\% & 63.3\% \\
+frozen & ImageNet & 마지막 층 & 10 & 0.001 & 2,052 & 95.0\% & 92.5\% \\
+custom & ImageNet & 전체 & 5 & 0.0003 & 11,178,564 & 100.0\% & 97.5\% \\
+\bottomrule
+\end{tabular}
+\end{center}
 
-\fillin{How far apart the test accuracies are, starting from ImageNet and from
-random numbers, and why you think that is.}
+\begin{center}
+\picturefile[0.48\linewidth]{figures/run_curves.png}\hfill
+\picturefile[0.48\linewidth]{figures/run_confusion.png}
+\end{center}
+\begin{center}
+\picturefile[0.48\linewidth]{figures/scratch_curves.png}\hfill
+\picturefile[0.48\linewidth]{figures/scratch_confusion.png}
+\end{center}
+\begin{center}
+\picturefile[0.48\linewidth]{figures/frozen_curves.png}\hfill
+\picturefile[0.48\linewidth]{figures/frozen_confusion.png}
+\end{center}
+\begin{center}
+\picturefile[0.48\linewidth]{figures/custom_curves.png}\hfill
+\picturefile[0.48\linewidth]{figures/custom_confusion.png}
+\end{center}
 
-\fillin{How close training only the last layer gets to training all of them.}
+run의 train loss는 첫 epoch의 0.7575에서 2번째 epoch에 0.1283으로 크게
+내려갔고 이후 0에 가까워졌다. test loss는 4번째 epoch에 0.1117까지
+내려온 뒤 대체로 0.10 근처에서 평평해졌다. test 정확도도 4번째 epoch의
+97.5\% 부근 이후 더 오르지 않았다. 학습은 초반에 대부분 진행됐고,
+뒤쪽 epoch은 train 성능만 더 완벽하게 만들었다.
 
-\subsection*{Output of the runs}
+run의 train/test 정확도 차이는 \textbf{직접 계산}하면
+$100.0-97.5=2.5$퍼센트포인트다. scratch는 $100.0-63.3=36.7$퍼센트포인트다.
+run은 검색 이미지의 test를 거의 맞혔지만, 새 이미지에서의 성능은 별도로
+확인해야 했다. scratch는 train을 외우는 데 비해 test 일반화가 약했다.
+
+run confusion matrix에서 오답은 치이카와→가나디 1장, 치이카와→몰랑이 1장,
+농담곰→몰랑이 1장으로 각기 다른 조합이었다. 반복되는 최다 혼동 쌍은
+없었다. 같은 작가의 치이카와와 농담곰이 가장 헷갈릴 것이라는 예상과 달리
+둘 사이 오답은 없었다.
+
+ImageNet 시작과 random 시작의 test 정확도 차이는 \textbf{직접 계산}하면
+$97.5-63.3=34.2$퍼센트포인트다. ImageNet이 선·윤곽·둥근 형태 같은 특징을
+이미 학습해 캐릭터 그림에 활용했을 가능성이 있다고 생각한다. 마지막 층만
+학습한 frozen의 test 정확도는 92.5\%로, 전체 학습 run보다
+	extbf{직접 계산} 기준 5.0퍼센트포인트 낮았다. frozen은 2,052개,
+전체 학습 run은 11,178,564개 파라미터를 학습했다.
+
+\subsection*{실행 출력}
 \outputfile{outputs/run_output.txt}
 \outputfile{outputs/scratch_output.txt}
 \outputfile{outputs/frozen_output.txt}
-% One more line like these for the setting you chose, named by its tag.
-\fillin{the output of the run with your own setting}
+\outputfile{outputs/custom_output.txt}
 
 % ---------------------------------------------------------------------------
-\section*{Problem 4. Cleaning}
+\section*{Problem 4. 데이터 청소와 재학습}
 
-\subsection*{My rule}
-\fillin{Your rule, in one or two sentences, as you wrote it before you
-started.}
+\subsection*{청소 규칙}
+모델이 캐릭터의 생김새만 보고 구분하고, 그림뿐 아니라 굿즈 같은 다른
+형태에서도 알아보기를 원했다. 한 캐릭터가 주인공이면 형태와 상관없이
+남기되, 캐릭터 이름이 읽힐 정도로 보이는 이미지, 캐릭터가 없거나 크롭에서
+주인공이 잘리는 이미지, 글자가 대부분인 이미지는 뺐다. 단체샷 기준은
+224×224 중앙 크롭을 기준으로 다시 정해, 크롭 안에서 대상 캐릭터가 잘리거나
+다른 캐릭터가 더 크게 보이면 제외했다.
 
-\subsection*{Three kinds of junk}
-\fillin{Three kinds of junk, with one picture of each.}
+\subsection*{찾은 불필요 이미지 유형}
+세 예시는 모두 삭제한 원본에서 가져왔다.
 
-% For example: \picturefile[0.3\linewidth]{figures/junk_1.jpg}
+\begin{center}\small
+\begin{minipage}{0.31\linewidth}\centering
+\includegraphics[width=\linewidth]{figures/junk_other_character_chiikawa_0004.jpg}\\
+chiikawa/0004.jpg — 다른 캐릭터
+\end{minipage}\hfill
+\begin{minipage}{0.31\linewidth}\centering
+\includegraphics[width=\linewidth]{figures/junk_name_text_molang_0001.jpg}\\
+molang/0001.jpg — 이름 글자
+\end{minipage}\hfill
+\begin{minipage}{0.31\linewidth}\centering
+\includegraphics[width=\linewidth]{figures/junk_group_shot_chiikawa_0001.jpg}\\
+chiikawa/0001.jpg — 단체샷
+\end{minipage}
+\end{center}
 
-\subsection*{What I removed}
+\subsection*{제거 수와 near copy}
 \outputfile{outputs/clean_count.txt}
+\outputfile{outputs/clean_reason_by_class.txt}
 
-\fillin{How many near copies it found, and what you did with them.}
+공식 clean.py count 기준 제거 수는 chiikawa 84장, ganadi 42장, molang
+72장, nongdamgom 25장이다. 네 클래스 제거 수 합계 223장과 전체 600장 중
+377장이 남았다는 값은 표의 클래스를 더한 \textbf{직접 계산}이다.
+가장 많은 제거 이유는 name text 102장이었다.
 
-\fillin{Of the first 20 suspects in each class, how many you removed. Whether
-the suspects included junk you had missed, and whether you found junk it did
-not list.}
+청소 전 data/raw 복사본으로 재현한 공식 suspects agreement는 600장 중
+83.0\%였고, 기존 메모와 일치했다. 당시 공식 copies.png 제목은 near copy
+44쌍을 표시했다. 현재 청소 결과로 공식 copies 시트에는 9쌍이 표시된다.
+clean.py count에서 near copy 이유로 24장을 제거한 것으로 출력됐다.
+세 장이 한 묶음이었던 ganadi/0041, 0080, 0112에서는 0041만 남겼다.
+chiikawa/0012와 0023은 서로 중복으로 보였지만 이름 글자 규칙에도 걸려
+둘 다 뺐다. 일부는 양쪽을 남겨두었다.
 
-\subsection*{Before and after cleaning}
+\begin{center}
+\picturefile[0.9\linewidth]{figures/preclean_near_copies.png}
+\picturefile[0.9\linewidth]{figures/cleaned_near_copies.png}
+\end{center}
+\outputfile{outputs/suspects_preclean_output.txt}
+\outputfile{outputs/suspects_top20_removed.txt}
+
+\begin{center}\small
+\begin{tabular}{lrr}
+\toprule
+클래스 & 공식 상위 20개 중 제거 & 그중 학습 후 too small \\
+\midrule
+chiikawa & 12/20 & 0 \\
+ganadi & 11/20 & 1 (0086, 1위) \\
+molang & 7/20 & 1 (0079, 2위) \\
+nongdamgom & 4/20 & 0 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+suspects는 놓친 불량을 포함했다. ganadi/0086과 molang/0079를 처음에는
+남겼다가 clean 모델의 오분류를 다시 보고 too small 사유로 제거했다.
+반대로 도구 상위 20개에 들지 않은 제거 파일도 많았다. 상위 20개 제거 수
+합계 34장은 위 표에서 직접 합산한 값이다. 이름 글자 이미지처럼 규칙으로
+찾은 불량은 suspects 상위권에서 놓친 경우가 있었다.
+
+\subsection*{청소 전후}
 \outputfile{outputs/compare.txt}
 
-\fillin{The test accuracy and the accuracy on your new images, before and
-after. If a number went down, why you think it did.}
+최종 비교에서 run의 검색 test 정확도는 97.5\%, clean은 92.1\%였다.
+두 test 집합은 청소로 이미지 구성이 달라 같은 시험지는 아니다. 새 이미지
+32장에서는 run 46.9\% (15/32), clean 53.1\% (17/32)였다. 새 이미지 정확도
+차이 $53.1-46.9=6.2$퍼센트포인트는 출력값에서 뺀 \textbf{직접 계산}이다.
+청소 전에는 글자와 비슷한 복사본처럼 쉬운 단서가 섞여 있었을 수 있고,
+청소 후에는 그런 단서가 줄어 정확도가 내려갔을 수 있다고 생각한다.
+하지만 청소 전후 test 데이터가 다르므로 test 정확도만으로 청소 효과를
+판단하지 않고, 바뀌지 않은 새 이미지 비교를 더 공정한 기준으로 삼았다.
+
+최종 청소 모델의 혼동 행렬과 자신 있게 틀린 이미지 6장은 다음과 같다.
+\begin{center}\picturefile[0.48\linewidth]{figures/clean_confusion.png}\hfill
+\picturefile[0.48\linewidth]{figures/clean_worst.png}\end{center}
 
 % ---------------------------------------------------------------------------
-\section*{Problem 5. Images from a new source}
+\section*{Problem 5. 새로운 출처의 이미지}
 
-\fillin{Where your new images came from, and why you are sure none of them are
-among your downloads.}
+새 이미지는 직접 그린 그림과 직접 촬영한 굿즈 사진으로 준비했다.
+다운로드 이미지 검색과 겹칠 수 없는 개인 그림·사진이다.
+공식 overlap 출력은 이 이미지들이 다운로드한 599장과 near copy가 아니라고
+보고했다.
 
 \outputfile{outputs/overlap.txt}
 
-\fillin{The accuracy on your downloaded test set and on your new images, side
-by side.}
+최종 clean 모델은 다운로드 test에서 92.1\%, 새 이미지에서 53.1\%였다.
+청소 전 run은 각각 97.5\%, 46.9\%였다. 새 이미지의 배경, 조명, 재질과
+촬영 각도가 검색 이미지와 달라 결과가 낮아졌을 수 있다.
 
-\fillin{Five mistakes it was confident about, with the pictures. For each one,
-what in the image you think pushed it the wrong way.}
+\subsection*{자신 있게 틀린 다섯 이미지}
+\picturefile[0.95\linewidth]{figures/new_images_confident_mistakes.png}
 
-\fillin{What is different about your new images: background, lighting, angle,
-distance, what else is in the frame.}
+1. 농담곰 굿즈를 가나디로 98\% 예측했다. 얼굴만 보이는 네모 파우치라
+    귀와 몸통이 드러나지 않고 비닐 반사도 있다. 네모 파우치 모양을
+    가나디로 읽었을 수도 있다고 생각한다.
+2. 치이카와 연필 그림을 가나디로 97\% 예측했다. 회색 선만 있어서
+    검은 선화가 많은 가나디로 답했을 수도 있다고 생각한다.
+3. 치이카와 보라색 선 그림을 몰랑이로 95\% 예측했다. 보라색과 배경이
+    몰랑이 이미지의 다양한 색을 떠올리게 했을지 모르겠지만 확실하지 않다.
+4. 농담곰 스티커 시트를 몰랑이로 83\% 예측했다. 작은 캐릭터, 파스텔
+    배경, 비닐 포장 또는 한 화면에 많은 캐릭터가 영향을 줬을 수 있다.
+5. 몰랑이 굿즈를 가나디로 80\% 예측했다. 보라·파란 조명 아래 몰랑이가
+    작게 보여서 틀렸을 수 있다고 생각한다.
+
+새 이미지에는 책상과 다른 굿즈 같은 배경, 색이 낀 조명과 비닐 반사,
+얼굴 클로즈업과 누운 자세, 천·스티커·연필선 같은 재질 차이가 있었다.
 
 % ---------------------------------------------------------------------------
-\section*{Problem 6. The demo}
+\section*{Problem 6. 데모 페이지}
 
-Address: \fillin{your GitHub Pages address}
+주소: \url{https://slowwbluee.github.io/mas1004_assignment_01/}
 
-\fillin{What happens when you show it something that is none of your
-categories.}
+상위 배지는 로컬과 배포 페이지에서 초록색이었다. 카테고리에 없는 장난감
+피규어 여러 개 사진을 보여줘도 모델은 ``해당 없음'' 대신 네 캐릭터 중
+하나를 골라 답했다. 따라서 높은 확신도가 정답을 뜻하지 않는다.
 
 % ---------------------------------------------------------------------------
-\section*{Problem 7. What the model looks at}
+\section*{Problem 7. 모델이 무엇을 보는가}
 
-% Copy this subsection once for every guess.
-\subsection*{Guess 1}
+Problem 1에서는 눈·귀·몸 모양을 단서로 구분할 것이라고 예상했다. 아래 세
+가설은 이미지와 오답에서 발견한 단서를 바탕으로 세웠고, 지정한 부분만
+바꾼 원본/사본을 데모 페이지에 각각 올려 확인했다.
 
-\fillin{The guess, and what in your images or your model's mistakes made you
-think of it.}
+\subsection*{가설 1: 농담곰 굿즈의 배경이 노란색이면 농담곰으로 인식한다}
+노란 배경의 농담곰 굿즈는 농담곰으로 답했고, 민트·검은 배경의 비슷한
+굿즈는 가나디로 답한 점에서 배경 색을 의심했다. 노란 배경 치이카와
+키링은 치이카와로 맞혔으므로, 가설 범위를 농담곰 굿즈로 한정했다.
+같은 굿즈의 캐릭터 부분을 유지하고 배경을 노란색으로 바꾸는 실험은
+배경 단서가 답에 영향을 주는지 확인하기 위한 것이었다.
 
-\fillin{The change you chose, and why it tests the guess.}
+실험 1 네 장 모두 원본에서는 가나디가 1등이었고, 노란 배경 사본에서는
+농담곰이 1등이었다. 다만 칠하는 과정에서 포장 비닐과 주변 물건도 함께
+사라졌으므로, 노란색과 배경 단순화 효과를 분리하지 못했다. 30번 사본은
+농담곰 50.4\%, 가나디 47.5\%로 차이가 작았다.
+실험 1 사본은 직접 색칠했으며, 사용한 프로그램 이름은 \fillin{직접 입력: 색칠 프로그램 이름}이다.
 
-My request to the agent, word for word:
-\begin{quote}
-\fillin{the request}
+\subsection*{가설 2: 색깔 선 그림은 몰랑이로 분류된다}
+색깔 펜으로 그린 다른 캐릭터들도 몰랑이로 분류된 사례가 있었고,
+보라색 선 치이카와와 색깔 선 가나디도 그랬다. 반면 회색 연필 그림의 답은
+흩어졌다. 흰 종이 배경은 비슷했으므로 선 색이 단서일 수
+있다고 생각했다. 선의 굵기와 위치를 유지하고 색만 검정으로 바꿔 이를
+시험했다. 바뀐 사본 네 장 모두 몰랑이 확률이 낮아졌고, 가나디 그림 세
+장은 가나디가 1등으로 바뀌었다. 보라색 선 치이카와는 검정으로 바꾼 뒤에도
+몰랑이 55.6\%로 남았다. 색깔 펜과 연필은 선 굵기·진하기도 달라서, 색만이
+원인이라고 단정할 수는 없다.
+
+\subsection*{가설 3: 모델은 몰랑이를 색으로 알아본다}
+색이 있는 다른 캐릭터와 피규어 사진이 몰랑이로 분류된 사례가 있었고,
+몰랑이 학습 이미지의 배경 색도 다양했다. 색이 몰랑이 답에 쓰인다면
+몰랑이 사진을 흑백으로 바꿨을 때 답이 달라질 것이라고 예상했다.
+실험 3의 네 원본은 모두 몰랑이가 1등이었고, 흑백 사본에서는 세 장이
+가나디, 한 장이 농담곰으로 바뀌었다. 몰랑이 확률은 네 사본 모두 낮아졌다.
+반대 사례로 회색 연필로 그린 몰랑이는 색이 없어도 몰랑이로 맞혔지만,
+확신도는 낮았다.
+
+\subsection*{세 실험을 함께 보며}
+색을 빼면 가나디로 가는 경향은 실험 2-A와 실험 3에서 함께 보였다.
+색깔 펜 선을 검정으로 바꾼 가나디 그림 세 장과 흑백으로 바꾼 몰랑이
+사진 세 장이 가나디로 분류됐다. Draw it 그림이 모두 가나디로 나온
+기록과도 비슷하다. 반대로 색이 있으면 몰랑이로 가는 경향은 실험 2-A
+원본과 실험 3 원본에서 보였다. Problem 1에서는 눈, 귀, 몸 모양으로
+구분할 것이라고 예상했다.
+
+\subsection*{에이전트에게 보낸 이미지 변형 요청 원문}
+\begin{quote}\small
+세 가지 모두 원본은 절대 건드리지 말고 사본만 만들어줘.\\
+각 실험마다 번호별 실제 파일명도 같이 알려줘.\\[0.4em]
+{\bfseries [실험 1] 23, 25, 27, 30번 (농담곰 굿즈)}\\
+배경만 노란색으로 바꾼 사본을 data/changed/exp1\_background\_yellow 에 저장해줘.\\
+굿즈 자체의 색, 모양, 위치, 크기는 그대로 두고 배경만 바꿔줘.\\[0.4em]
+{\bfseries [실험 2-A] 09, 11, 12, 13번 (색깔 펜 그림)}\\
+선 색만 검정으로 바꾼 사본을 data/changed/exp2a\_lines\_black 에 저장해줘.\\
+선의 굵기, 위치, 모양과 종이 배경은 그대로 두고 선 색만 바꿔줘.\\[0.4em]
+{\bfseries [실험 3] 17, 18, 19, 20번 (몰랑이 사진)}\\
+흑백으로 바꾼 사본을 data/changed/exp3\_molang\_gray 에 저장해줘.\\
+색만 없애고 크기, 위치, 밝기는 최대한 그대로 둬줘.\\[0.4em]
+다 만들면 실험별로 원본과 사본을 나란히 보여주는 비교 시트도 만들어줘.\\
+예측이나 결과 판단은 하지 마. 이미지 변형만 해줘.
 \end{quote}
 
-% One \sidebyside for every image you changed.
-\sidebyside{figures/guess1_original_1.jpg}{\fillin{original: the model's answer}}
-           {figures/guess1_changed_1.jpg}{\fillin{changed: the model's answer}}
+실험별로 모델 입력과 같은 224×224 크롭을 나란히 비교했다.
+\begin{center}\picturefile[0.95\linewidth]{figures/problem7_exp1_crops.png}\end{center}
+\begin{center}\picturefile[0.95\linewidth]{figures/problem7_exp2_crops.png}\end{center}
+\begin{center}\picturefile[0.95\linewidth]{figures/problem7_exp3_crops.png}\end{center}
+\outputfile{outputs/problem7_demo_results.txt}
 
-\fillin{What the results say about the guess.}
+\subsection*{현재 생각과 확신}
+지금 모델은 무엇으로 캐릭터를 구분한다고 생각하나: Problem 1에서는 눈,
+귀, 몸 모양 같은 생김새로 구분할 거라고 예상했다. 하지만 실험 결과를
+보면 모델은 생김새보다 색에 크게 기대어 구분하는 것 같다. 그림 선에 색이
+있거나 사진에 색이 많으면 몰랑이로, 색이 없으면 가나디로, 농담곰 굿즈는
+노란 배경이면 농담곰으로 답하는 경향이 있었다.
 
-\subsection*{What I now think the model uses}
-\fillin{What you now think the model uses to tell your categories apart, and
-how sure you are.}
+얼마나 확신하나, 그 이유: 60\% 정도 확신한다. 캐릭터 모양은 그대로 두고
+색만 바꿨는데 답이 바뀌었다. 색깔 선을 검정으로 바꾸자 몰랑이에서
+가나디가 됐고, 몰랑이를 흑백으로 바꾸자 몰랑이가 아니게 됐고, 농담곰
+굿즈의 배경을 노랗게 바꾸자 농담곰이 됐다. 세 실험 모두 색만 건드렸는데
+답이 움직였다.
+
+다만 100\%라고 하기 어려운 이유도 있다. 실험마다 이미지가 4장뿐이고,
+실험 1은 배경을 칠하면서 비닐과 주변 물건도 같이 사라져 노란색 때문인지
+배경이 단순해져서인지 구분할 수 없다. 보라색 선 치이카와는 검정으로
+바꿔도 몰랑이로 남았고, 회색 연필로 그린 몰랑이는 색이 없는데도
+몰랑이로 맞혔다.
+
+아직 확인하지 못한 것과 새 추측: 색으로 분류하는 특징이 모든 캐릭터에도
+적용되는지는 모르겠다. 특히 치이카와는 이번 실험에서 색에 따라 답이
+바뀌는 모습을 확인하지 못했다. 실험 1에서 노란색이 아닌 다른 단색으로
+배경을 칠해도 농담곰이 되는지 확인하면 노란색 때문인지, 배경이 단순해져서
+인지 가릴 수 있을 것 같다.
 
 % ---------------------------------------------------------------------------
-\section*{Appendix. Output of check.py}
+\section*{부록. check.py 전체 출력}
 \outputfile{outputs/check.txt}
 
 \end{document}

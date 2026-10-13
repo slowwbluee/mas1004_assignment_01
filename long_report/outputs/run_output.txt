@@ -1,0 +1,31 @@
+reading /Users/mac/Desktop/mas1004_assignment_01/data/clean
+600 images, 4 classes, read in 3 s
+  chiikawa                 150
+  ganadi                   150
+  molang                   150
+  nongdamgom               150
+training on 480, testing on 120
+model has 11,178,564 parameters, 11,178,564 of them will be trained
+epoch 1/10: train_loss=0.7575 train_acc=0.7000 test_loss=0.3519 test_acc=0.8833
+epoch 2/10: train_loss=0.1283 train_acc=0.9750 test_loss=0.1853 test_acc=0.9333
+epoch 3/10: train_loss=0.0406 train_acc=0.9979 test_loss=0.1325 test_acc=0.9583
+epoch 4/10: train_loss=0.0189 train_acc=1.0000 test_loss=0.1117 test_acc=0.9750
+epoch 5/10: train_loss=0.0082 train_acc=1.0000 test_loss=0.1125 test_acc=0.9667
+epoch 6/10: train_loss=0.0076 train_acc=1.0000 test_loss=0.1083 test_acc=0.9667
+epoch 7/10: train_loss=0.0051 train_acc=1.0000 test_loss=0.1069 test_acc=0.9667
+epoch 8/10: train_loss=0.0052 train_acc=1.0000 test_loss=0.1065 test_acc=0.9667
+epoch 9/10: train_loss=0.0040 train_acc=1.0000 test_loss=0.1043 test_acc=0.9667
+epoch 10/10: train_loss=0.0030 train_acc=1.0000 test_loss=0.1008 test_acc=0.9750
+
+trained in 2.8 minutes
+train accuracy 100.0%
+test  accuracy 97.5%
+wrote /Users/mac/Desktop/mas1004_assignment_01/results/run_curves.png
+wrote /Users/mac/Desktop/mas1004_assignment_01/results/run_confusion.png
+wrote /Users/mac/Desktop/mas1004_assignment_01/results/run_worst.png
+wrote /Users/mac/Desktop/mas1004_assignment_01/results/run_model.pt
+
+One line for your experiment table:
+| run | ImageNet | all layers | 10 | 0.0001 | 11,178,564 | 100.0% | 97.5% |
+
+To put this model on your web page: python src/export_web.py --tag run

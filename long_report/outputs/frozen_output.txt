@@ -1,0 +1,31 @@
+reading /Users/mac/Desktop/mas1004_assignment_01/data/clean
+600 images, 4 classes, read in 3 s
+  chiikawa                 150
+  ganadi                   150
+  molang                   150
+  nongdamgom               150
+training on 480, testing on 120
+model has 11,178,564 parameters, 2,052 of them will be trained
+epoch 1/10: train_loss=1.3760 train_acc=0.3563 test_loss=1.1449 test_acc=0.4917
+epoch 2/10: train_loss=1.0578 train_acc=0.5604 test_loss=0.9048 test_acc=0.6667
+epoch 3/10: train_loss=0.8349 train_acc=0.7000 test_loss=0.7249 test_acc=0.7750
+epoch 4/10: train_loss=0.7097 train_acc=0.7833 test_loss=0.6593 test_acc=0.7750
+epoch 5/10: train_loss=0.6494 train_acc=0.7937 test_loss=0.5857 test_acc=0.8083
+epoch 6/10: train_loss=0.5386 train_acc=0.8667 test_loss=0.5157 test_acc=0.8667
+epoch 7/10: train_loss=0.4925 train_acc=0.8958 test_loss=0.4687 test_acc=0.8750
+epoch 8/10: train_loss=0.4908 train_acc=0.8688 test_loss=0.4332 test_acc=0.9000
+epoch 9/10: train_loss=0.4331 train_acc=0.9000 test_loss=0.4140 test_acc=0.9167
+epoch 10/10: train_loss=0.3907 train_acc=0.9271 test_loss=0.3844 test_acc=0.9250
+
+trained in 1.5 minutes
+train accuracy 95.0%
+test  accuracy 92.5%
+wrote /Users/mac/Desktop/mas1004_assignment_01/results/frozen_curves.png
+wrote /Users/mac/Desktop/mas1004_assignment_01/results/frozen_confusion.png
+wrote /Users/mac/Desktop/mas1004_assignment_01/results/frozen_worst.png
+wrote /Users/mac/Desktop/mas1004_assignment_01/results/frozen_model.pt
+
+One line for your experiment table:
+| frozen | ImageNet | last layer | 10 | 0.001 | 2,052 | 95.0% | 92.5% |
+
+To put this model on your web page: python src/export_web.py --tag frozen

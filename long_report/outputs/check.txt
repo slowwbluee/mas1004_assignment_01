@@ -1,0 +1,53 @@
+MAS1004 Assignment 1, checking your work
+
+Training images  (/Users/mac/Desktop/mas1004_assignment_01/data/clean)
+----------------------------------------------------------------------
+  chiikawa                        66 images
+  ganadi                         108 images
+  molang                          78 images
+  nongdamgom                     125 images
+
+Your images from a new source  (/Users/mac/Desktop/mas1004_assignment_01/data/new_images)
+-----------------------------------------------------------------------------------------
+  chiikawa                         9 images
+  ganadi                           6 images
+  molang                           7 images
+  nongdamgom                      10 images
+
+The same image appearing twice
+------------------------------
+  ok       no file appears twice byte for byte. Near copies (the same picture resized or re-saved) are only found by `python src/clean.py suspects` and `python src/clean.py overlap`.
+
+The model you exported for the web page
+---------------------------------------
+  ok       4 classes: chiikawa, ganadi, molang, nongdamgom
+  ok       model.onnx is 44.8 MB, 11,178,564 parameters
+           input [1, 3, 224, 224], prepared as: shorter side 256, centre 224 x 224, mean [0.485, 0.456, 0.406], std [0.229, 0.224, 0.225]
+
+Does the exported model give the answers Python gave?
+-----------------------------------------------------
+  ok       yes, they agree (largest gap 0.0000)
+
+Your images from a new source  (/Users/mac/Desktop/mas1004_assignment_01/data/new_images)
+-----------------------------------------------------------------------------------------
+
+  accuracy on your new images: 17/32 = 53.1%
+
+  rows are what it really is, columns are what the model said
+                 chiikawa   ganadi   molang nongdamg
+    chiikawa            4        2        1        2
+    ganadi              0        3        3        0
+    molang              0        1        6        0
+    nongdamgom          1        4        1        4
+
+  the mistakes it was most sure about:
+    KakaoTalk_Photo_2026-10-12-15-02-30 010.jpeg said ganadi (98%), really nongdamgom
+    KakaoTalk_Photo_2026-10-13-02-10-29 001.jpeg said ganadi (97%), really chiikawa
+    KakaoTalk_Photo_2026-10-13-02-10-39 010.jpeg said molang (95%), really chiikawa
+    KakaoTalk_Photo_2026-10-12-15-02-24 003.jpeg said molang (83%), really nongdamgom
+    KakaoTalk_Photo_2026-10-12-15-02-32 012.jpeg said ganadi (80%), really molang
+
+Summary
+-------
+  nothing is broken
+
