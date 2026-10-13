@@ -124,52 +124,79 @@ run 100 / 97.5 | scratch 100 / 63.3 | frozen 95.0 / 92.5 | custom 100 / 97.5
 
 ## Problem 4 청소 기록
 
-### 청소 전 공식 도구 결과
-- clean.py suspects 요약: 600장 중 83.0%가 라벨과 일치
-- near copy: copies.png에서 직접 센 쌍 개수 = __쌍
-  (참고: 에이전트가 직접 짠 코드는 44쌍이라고 했지만 공식 결과 아님)
+### 청소 전 공식 도구 결과 (results/cleaning/suspects_preclean/)
+- 처음 실행 결과는 이후 실행에서 덮어씌워져 사라짐. data/raw 원본 600장을
+  임시로 복사해 공식 clean.py suspects를 다시 돌려 재현함
+- agreement: 600장 중 83.0% (처음 기록과 일치 → 같은 결과임을 확인)
+- near copy: 44쌍 (copies.png 제목, CSV 모두 44)
+
+### suspects 상위 20개 중 지운 수
+| 클래스 | 지운 수 | 그중 학습 후 too small로 추가 삭제 |
+| chiikawa | 12/20 | 0 |
+| ganadi | 11/20 | 1 (0086, 1위) |
+| molang | 7/20 | 1 (0079, 2위) |
+| nongdamgom | 4/20 | 0 |
+
+### 청소 최종 결과 (data/removed/log.csv, clean.py count 기준)
+| 이유 | chiikawa | ganadi | molang | nongdamgom | 합계 |
+| name text | 6 | 26 | 55 | 15 | 102 |
+| group shot | 37 | 0 | 7 | 3 | 47 |
+| other character | 28 | 7 | 3 | 2 | 40 |
+| near copy | 8 | 8 | 3 | 5 | 24 |
+| unrecognizable | 2 | 0 | 2 | 0 | 4 |
+| cropped out | 3 | 0 | 0 | 0 | 3 |
+| too small | 0 | 1 | 2 | 0 | 3 |
+| 제거 | 84 | 42 | 72 | 25 | 223 |
+| 남음 | 66 | 108 | 78 | 125 | 377 |
+(클래스별 칸은 log.csv로 확인 필요)
+
+- 지운 파일 전체 기록: data/removed/log.csv
+- 가장 많은 이유: name text 102장. 몰랑이 55장, 가나디 26장
+- 치이카와는 group shot(37)과 other character(28)가 대부분.
+  "chiikawa"가 작품 이름이기도 해서 같은 작품의 다른 캐릭터가 섞임
+- 농담곰 폴더에도 치이카와(0146)가 섞여 있었음. 같은 작가라 일본어 검색에서도 섞임
+- too small 3장은 clean 학습 후 worst 이미지를 보고 추가로 지움
+
+### near copy 처리
+- 청소 전 공식 도구: 44쌍
+- 1차 청소 후 다시 돌린 결과: 29쌍
+- near copy 이유로 지운 파일: 총 24장
+  (갤러리 보면서 직접 찾은 6장 + 29쌍 시트 보고 지운 18장)
+- 세 장이 같은 그림: ganadi 0041 / 0080 / 0112 → 0041만 남김
+- 쌍으로 나왔지만 이름 글자 규칙에 걸려 둘 다 지움: chiikawa 0012, 0023
+
+### 보류 (확인 못 하고 둘 다 남긴 쌍)
+- nongdamgom 0027 ~ 0130, nongdamgom 0013 ~ 0058, ganadi 0110 ~ 0136
+- ganadi 0062 ~ 0102 ("듀…" 글자)
+- 29쌍 시트에서 화면에 안 보였던 5쌍
+
+### README 질문 답
+- suspects에 내가 놓친 쓰레기가 있었나?
+  있었다. ganadi/0086(1위), molang/0079(2위)는 도구가 가장 의심했는데
+  갤러리로 볼 때 남겼다. clean 모델이 자신 있게 틀린 이미지로 다시
+  나타나서 결국 지웠다.
+- 도구가 못 찾은 쓰레기를 내가 찾았나?
+  훨씬 많았다. 223장 중 상위 20개 안에 있던 건 34장뿐이다.
+  특히 이름 글자 이미지는 거의 못 잡았다(몰랑이 이름 글자 55장 중
+  상위 20개에서 지운 건 7장). molang/0048은 134위였지만 clean 모델이
+  틀린 이미지로 나타나서 지웠다.
 
 ### 에이전트 관련 메모 (짧은 보고서 재료)
-- 에이전트가 clean.py 명령어 에러를 숨기는 옵션(2>/dev/null || true)을
-  붙이고, 공식 도구 대신 비슷한 코드를 직접 짜서 결과를 보여줬음
-- 다시 시켜서 공식 결과(suspects.csv, copies.png)를 확인함
-
-### 지울 목록
-(suspect: 공식 상위 20개 안에 있었으면 O, 없었으면 X)
-
-#### chiikawa
-- 파일명 — 이유 — suspect O/X
-
-#### ganadi
-#### molang
-#### nongdamgom
-
-#### near copy 처리
-- A.jpg ~ B.jpg → B 삭제 (중복)
-
-### 보류 (나중에 결정)
-- 
+- clean.py 명령어에 에러를 숨기는 옵션(2>/dev/null || true)을 붙이고,
+  공식 도구 대신 비슷한 코드를 직접 짜서 결과를 보여줌. 다시 시켜서
+  공식 결과를 확인함
+- 가나디 삭제 때 "표만 먼저 보여줘"라고 했는데 확인을 기다리지 않고 바로 지움
+- clean 재학습 후 confusion matrix를 전체 데이터(377장)로 계산해서 보여줌.
+  run.py가 만든 clean_confusion.png로 확인함
+- 상황 확인을 부탁했더니 원래 폴더가 아니라 worktree 복사본을 만들어 작업함
+- 청소 전 suspects 결과가 덮어씌워졌다는 걸 정직하게 알려줬고,
+  원본으로 재현해서 83.0% 일치를 확인함
 
 ### 쓰레기 종류 대표 예시 (보고서용 3개)
-1. 단체샷: 파일명
-2. 이름 글자: 파일명
-3. 다른 캐릭터: 파일명
+1. 단체샷: chiikawa 0001.jpg
+2. 이름 글자: ganadi 0009.jpg
+3. 다른 캐릭터: chiikawa 0104.jpg
 
-#### chiikawa 결과 (clean.py count)
-- 다운로드 150 / 제거 78 / 남음 72
-- 이유: group shot 37, other character 28, near copy 4,
-  name text 4, cropped out 3, unrecognizable 2
-
-  ### 청소 결과 (clean.py count)
-| 클래스 | 다운로드 | 제거 | 남음 |
-| chiikawa | 150 | 84 | 66 |
-| ganadi | 150 | 41 | 109 |
-| molang | 150 | 70 | 80 |
-| nongdamgom | 150 | 25 | 125 |
-| 합계 | 600 | 220 | 380 |
-
-이유: name text 102, group shot 47, other character 40,
-near copy 24, unrecognizable 4, cropped out 3
 
 ### 청소 전후 비교
 - test 정확도: 97.5% (117/120) → 88.2% (67/76), 9.3점 하락
