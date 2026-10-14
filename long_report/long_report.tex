@@ -70,9 +70,10 @@ RGB 채널을 ImageNet 평균과 표준편차로 정규화했다.
 \section*{Problem 3. 첫 학습 결과}
 
 \begin{center}\footnotesize
+\resizebox{\linewidth}{!}{%
 \begin{tabular}{lllr rrrr}
-	oprule
-태그 & 시작 가중치 & 학습 층 & epoch & lr & 학습 파라미터 & train acc. & test acc. \\
+\toprule
+tag & start & trained & epochs & lr & trainable parameters & train accuracy & test accuracy \\
 \midrule
 run & ImageNet & 전체 & 10 & 0.0001 & 11,178,564 & 100.0\% & 97.5\% \\
 scratch & random & 전체 & 10 & 0.0001 & 11,178,564 & 100.0\% & 63.3\% \\
@@ -80,6 +81,7 @@ frozen & ImageNet & 마지막 층 & 10 & 0.001 & 2,052 & 95.0\% & 92.5\% \\
 custom & ImageNet & 전체 & 5 & 0.0003 & 11,178,564 & 100.0\% & 97.5\% \\
 \bottomrule
 \end{tabular}
+}
 \end{center}
 
 \begin{center}
