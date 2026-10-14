@@ -7,7 +7,10 @@ that the model can eat.
 Run `pytest tests/test_data.py` after you fill them in.
 """
 
+from pathlib import Path
+
 import numpy as np
+from PIL import Image
 
 # Files with any other extension should be ignored.
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
@@ -50,7 +53,25 @@ def prepare_image(image):
     The web page does these same six steps in JavaScript. If your version is
     different, the self test badge at the top of your page turns red.
     """
-    raise NotImplementedError("Problem 2: fill in prepare_image")
+    rgb = image.convert("RGB")
+    width, height = rgb.size
+    short_side = min(width, height)
+    scale = RESIZE / short_side
+    new_width = max(1, int(width * scale))
+    new_height = max(1, int(height * scale))
+    resized = rgb.resize((new_width, new_height), Image.Resampling.BILINEAR)
+
+    left = (new_width - CROP) // 2
+    top = (new_height - CROP) // 2
+    right = left + CROP
+    bottom = top + CROP
+    cropped = resized.crop((left, top, right, bottom))
+
+    array = np.asarray(cropped, dtype=np.float32) / 255.0
+    mean = np.asarray(MEAN, dtype=np.float32).reshape((1, 1, 3))
+    std = np.asarray(STD, dtype=np.float32).reshape((1, 1, 3))
+    array = (array - mean) / std
+    return np.transpose(array, (2, 0, 1)).astype(np.float32)
 
 
 def load_folder(root):
@@ -83,7 +104,33 @@ def load_folder(root):
     Memory: every image becomes 3 x 224 x 224 numbers of 4 bytes, about 0.6 MB.
     750 images is about 450 MB. That fits on Colab and on most laptops.
     """
-    raise NotImplementedError("Problem 2: fill in load_folder")
+    root = Path(root)
+    class_dirs = sorted((path for path in root.iterdir() if path.is_dir()), key=lambda p: p.name)
+    class_names = [path.name for path in class_dirs]
+    class_to_index = {name: index for index, name in enumerate(class_names)}
+
+    rows = []
+    labels = []
+    paths = []
+
+    for class_dir in class_dirs:
+        for path in sorted(class_dir.iterdir(), key=lambda p: p.name):
+            if not path.is_file() or path.suffix.lower() not in IMAGE_SUFFIXES:
+                continue
+            try:
+                with Image.open(path) as image:
+                    rows.append(prepare_image(image))
+            except Exception:
+                continue
+            labels.append(class_to_index[class_dir.name])
+            paths.append(path)
+
+    if rows:
+        X = np.stack(rows, axis=0).astype(np.float32)
+    else:
+        X = np.empty((0, 3, CROP, CROP), dtype=np.float32)
+    y = np.asarray(labels, dtype=np.int64)
+    return X, y, class_names, paths
 
 
 def split_train_test(X, y, paths, test_ratio=0.2, seed=0):
@@ -102,4 +149,31 @@ def split_train_test(X, y, paths, test_ratio=0.2, seed=0):
         up with a class that has no test images at all, and then your accuracy
         number means nothing.
     """
-    raise NotImplementedError("Problem 2: fill in split_train_test")
+    if len(X) == 0:
+        return X.copy(), y.copy(), list(paths), X.copy(), y.copy(), list(paths)
+
+    rng = np.random.default_rng(seed)
+    train_idx = []
+    test_idx = []
+
+    for label in sorted(np.unique(y).tolist()):
+        indices = np.nonzero(y == label)[0]
+        indices = indices[rng.permutation(len(indices))]
+        n_test = max(1, int(round(len(indices) * test_ratio))) if len(indices) > 1 else 1
+        if n_test >= len(indices):
+            n_test = len(indices) - 1 if len(indices) > 1 else 1
+        test_idx.extend(indices[:n_test].tolist())
+        train_idx.extend(indices[n_test:].tolist())
+
+    train_idx = np.asarray(train_idx, dtype=np.int64)
+    test_idx = np.asarray(test_idx, dtype=np.int64)
+
+    X_train = X[train_idx]
+    y_train = y[train_idx]
+    paths_train = [paths[i] for i in train_idx.tolist()]
+
+    X_test = X[test_idx]
+    y_test = y[test_idx]
+    paths_test = [paths[i] for i in test_idx.tolist()]
+
+    return X_train, y_train, paths_train, X_test, y_test, paths_test
